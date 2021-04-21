@@ -1,1 +1,1 @@
-# Point Of Sale for the course object Orientaed Design IV1350
+# Point Of Sale for the course Object Object Oriented Design IV1350.
