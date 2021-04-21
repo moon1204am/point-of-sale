@@ -1,0 +1,16 @@
+-------------------------------------------------------------------------------
+Test set: se.kth.iv1350.pointofsale.model.AmountTest
+-------------------------------------------------------------------------------
+Tests run: 10, Failures: 3, Errors: 0, Skipped: 0, Time elapsed: 0.117 s <<< FAILURE! - in se.kth.iv1350.pointofsale.model.AmountTest
+toStringZeroAmt  Time elapsed: 0.018 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Wrong string returned by toString ==> expected: <0.0> but was: <0>
+	at se.kth.iv1350.pointofsale.model.AmountTest.toStringZeroAmt(AmountTest.java:130)
+
+toStringNegAmt  Time elapsed: 0.003 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Wrong string returned by toString ==> expected: <-10.0> but was: <-10>
+	at se.kth.iv1350.pointofsale.model.AmountTest.toStringNegAmt(AmountTest.java:121)
+
+toStringPosAmt  Time elapsed: 0.002 s  <<< FAILURE!
+org.opentest4j.AssertionFailedError: Wrong string returned by toString ==> expected: <10.0> but was: <10>
+	at se.kth.iv1350.pointofsale.model.AmountTest.toStringPosAmt(AmountTest.java:112)
+
