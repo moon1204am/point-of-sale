@@ -33,9 +33,7 @@ public class LogHandler {
         logMsgBuilder.append(createTime());
         logMsgBuilder.append(", Exception was thrown: ");
         logMsgBuilder.append(exception.getMessage());
-        if (exception.getMessage().contains("Could not register")) {
-            logFile.println(logMsgBuilder);
-        }
+        logFile.println(logMsgBuilder);
         System.out.println(logMsgBuilder);
         exception.printStackTrace(logFile);
     }

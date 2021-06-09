@@ -5,30 +5,44 @@
  */
 package se.kth.iv1350.pointofsale.model;
 
+import se.kth.iv1350.pointofsale.integration.ItemDTO;
+
 /**
  *
  * @author Maya
  */
 public class SaleDTO {
-    private Amount totalPrice;
-    private int totalQuantity;
-    private Sale saleInfo;
+    private Amount itemPrice;
+    private Amount runningTotal;
+    private String itemDescription;
+    private int quantity;
+    private int itemIdentifier;
     
-    public SaleDTO(Amount totalPrice, int totalQuantity, Sale saleInfo) {
-        this.totalPrice = totalPrice;
-        this.totalQuantity = totalQuantity;
-        this.saleInfo = saleInfo;
+    public SaleDTO(Amount itemPrice, Amount runningTotal, String itemDescription, int quantity, int itemIdentifier) {
+        this.itemPrice = itemPrice;
+        this.runningTotal = runningTotal;
+        this.itemDescription = itemDescription;
+        this.quantity = quantity;
+        this.itemIdentifier = itemIdentifier;
     }
     
-    public Amount getTotalPrice() {
-        return totalPrice;
+    public Amount getItemPrice() {
+        return itemPrice;
     }
     
-    public int getTotalQuantity() {
-        return totalQuantity;
+    public Amount getRunningTotal() {
+        return runningTotal;
     }
     
-    public Sale getSaleInfo() {
-        return saleInfo;
+    public String getItemDescription() {
+        return itemDescription;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public int getItemIdentifier() {
+        return itemIdentifier;
     }
 }

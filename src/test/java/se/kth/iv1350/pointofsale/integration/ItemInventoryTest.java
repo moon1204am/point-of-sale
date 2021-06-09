@@ -17,7 +17,13 @@ public class ItemInventoryTest {
 
     @Test
     public void testGetExistingItemFromInventory() throws UnknownItemIdentifierException, SQLException {
-        ItemDTO existingItem = new ItemDTO("Bread", new Amount(2.55), new Amount(0.05), "Fluffy milk bread", 124);
+        ItemDTO expResult = new ItemDTO("Bread", new Amount(2.55), new Amount(1.12), "Fluffy milk bread", 124);
+        ItemInventory instance = new ItemInventory();
+        ItemDTO result = instance.fetchItemFromInventory(124);
+        assertEquals(expResult, result, "Existing item was not found");
+
+    }
+        /*ItemDTO existingItem = new ItemDTO("Bread", new Amount(2.55), new Amount(1.12), "Fluffy milk bread", 124);
         ItemInventory instance = new ItemInventory();
         try {
             //String expResult = existingItem.getItemName();
@@ -29,22 +35,26 @@ public class ItemInventoryTest {
         } catch(DatabaseNotReachableException exc) {
             assertTrue(exc.getMessage().contains("Could not register"), "Existing item was not found" + exc.getMessage());
         }
-    }
-    
+    }*/
+
     @Test
     public void testGetNonExistingItemFromInventory() throws UnknownItemIdentifierException, SQLException {
-        ItemDTO nonExistingItem = null;
+        ItemDTO expResult = null;
         ItemInventory instance = new ItemInventory();
-        try {
+        ItemDTO result = instance.fetchItemFromInventory(10);
+        assertEquals(expResult, result, "Non-existing item was found");
+
+        /*try {
             //String expResult = nonExistingItem.getItemName();
             //String result = instance.fetchItemFromInventory(0).getItemName();
-            
-            ItemDTO expResult = nonExistingItem;
+
+            ItemDTO expResult = null;
+            ItemInventory instance = new ItemInventory();
             ItemDTO result = instance.fetchItemFromInventory(10);
-            
-            assertEquals(expResult, result, "Non-existing item was found" + result.getItemName());
+
+            assertEquals(expResult, result, "Non-existing item was found " + result.getItemName());
         } catch(DatabaseNotReachableException exc) {
             assertTrue(exc.getMessage().contains("Could not register"), "Non-existing item was not found" + exc.getMessage());
-        }
+        }*/
     }
 }

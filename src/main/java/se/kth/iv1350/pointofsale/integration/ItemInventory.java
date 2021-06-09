@@ -9,12 +9,14 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import se.kth.iv1350.pointofsale.model.Amount;
+import se.kth.iv1350.pointofsale.model.SaleDTO;
 
-public class ItemInventory {
+public class ItemInventory extends java.lang.Object {
     private String itemName;
     private Amount price;
     private Amount vatRate;
     private String itemDescription;
+    private int itemIdentifier;
     private List<ItemDTO> itemsInInventory = new ArrayList<>();
     private boolean connectedToDatabase = true;
     
@@ -27,14 +29,14 @@ public class ItemInventory {
     
     private void addItems() {
         
-        ItemDTO milk = new ItemDTO("Milk", new Amount(1.5), new Amount(0.01), "Milk", 123);
-        ItemDTO bread = new ItemDTO("Bread", new Amount(2.55), new Amount(0.05), "Bread", 124);
-        ItemDTO eggs = new ItemDTO("Eggs", new Amount(1.32), new Amount(0.6), "Eggs", 125);
-        ItemDTO icecream = new ItemDTO("Ice cream", new Amount(2.99), new Amount(1.5), "Ice cream", 126);
-        ItemDTO cucumber = new ItemDTO("Cucumber", new Amount(2.0), new Amount(1.35), "Cucumber", 127);
-        ItemDTO cereal = new ItemDTO("Cereal", new Amount(3.0), new Amount(2.99), "Cereal", 128);
-        ItemDTO yogurt = new ItemDTO("Yogurt", new Amount(1.3), new Amount(0.02), "Yogurt", 129);
-        ItemDTO strawberries = new ItemDTO("Strawberries", new Amount(2.1), new Amount(1.9), "Strawberries", 130);
+        ItemDTO milk = new ItemDTO("Milk", new Amount(1.5), new Amount(1.06), "Almond breeze", 123);
+        ItemDTO bread = new ItemDTO("Bread", new Amount(2.55), new Amount(1.12), "Fluffy milk bread", 124);
+        ItemDTO eggs = new ItemDTO("Eggs", new Amount(1.30), new Amount(1.25), "Eggs from happy hens", 125);
+        ItemDTO icecream = new ItemDTO("Ice cream", new Amount(2.99), new Amount(1.06), "Matcha ice cream", 126);
+        ItemDTO cucumber = new ItemDTO("Cheesecake", new Amount(2.0), new Amount(1.06), "Pillowy soft, light-as-air & heavenly cheesecake", 127);
+        ItemDTO cereal = new ItemDTO("Cereal", new Amount(3.0), new Amount(1.12), "Kellog's Cornflakes", 128);
+        ItemDTO yogurt = new ItemDTO("Yogurt", new Amount(1.3), new Amount(1.25), "Low Fat Yogurt", 129);
+        ItemDTO strawberries = new ItemDTO("Strawberries", new Amount(2.5), new Amount(1.25), "Sweet Strawberries", 130);
         
         itemsInInventory.add(milk);
         itemsInInventory.add(bread);
@@ -44,25 +46,6 @@ public class ItemInventory {
         itemsInInventory.add(cereal);
         itemsInInventory.add(yogurt);
         itemsInInventory.add(strawberries);
-
-        
-        /*ItemData milk = new ItemData("Milk", new Amount(1.5), new Amount(0.01), "Almond breeze", 123);
-        ItemData bread = new ItemData("Bread", new Amount(2.55), new Amount(0.05), "Fluffy milk bread", 124);
-        ItemData eggs = new ItemData("Eggs", new Amount(1.32), new Amount(0.6), "Eggs from happy hens", 125);
-        ItemData icecream = new ItemData("Ice cream", new Amount(2.99), new Amount(1.5), "Matcha ice cream", 126);
-        ItemData cucumber = new ItemData("Cheesecake", new Amount(2.0), new Amount(1.35), "Pillowy soft, light-as-air & heavenly cheesecake,", 127);
-        ItemData cereal = new ItemData("Cereal", new Amount(3.0), new Amount(2.99), "Kellog's Cornflakes", 128);
-        ItemData yogurt = new ItemData("Yogurt", new Amount(1.3), new Amount(0.02), "Low Fat Yogurt", 129);
-        ItemData strawberries = new ItemData("Strawberries", new Amount(2.1), new Amount(1.9), "Sweet Strawberries", 130);
-        
-        itemsInInventory.add(milk);
-        itemsInInventory.add(bread);
-        itemsInInventory.add(eggs);
-        itemsInInventory.add(icecream);
-        itemsInInventory.add(cucumber);
-        itemsInInventory.add(cereal);
-        itemsInInventory.add(yogurt);
-        itemsInInventory.add(strawberries);*/
     }
     
     /**
@@ -72,17 +55,7 @@ public class ItemInventory {
      */
     public ItemDTO fetchItemFromInventory(int itemIdentifier) throws UnknownItemIdentifierException, SQLException {
         ItemDTO foundItem = findItemByID(itemIdentifier);
-        
-        if(foundItem != null) {
-            itemName = foundItem.getItemName();
-            price = foundItem.getPrice();
-            vatRate = foundItem.getVatRate();
-            itemDescription = foundItem.getItemDescription();
-            itemIdentifier = foundItem.getItemIdentifier();
-        }
-        
-        ItemDTO registeredItem = new ItemDTO(itemName, price, vatRate, itemDescription, itemIdentifier);
-        return registeredItem;
+        return foundItem;
     }
     
     /**
@@ -96,26 +69,16 @@ public class ItemInventory {
             if(connectedToDatabase == false) {
                 throw new SQLException();
             }
-                
+
             for(int i = 0; i < itemsInInventory.size(); i++) {
                 currentIterationItem = itemsInInventory.get(i);
                 if(currentIterationItem.getItemIdentifier() == itemIdentifier) {
-                    break;
+                    return currentIterationItem;
                 }
-                
-                
             }
-            
-            /*for (ItemDTO item: itemsInInventory) {
-                if(item.getItemIdentifier() == itemIdentifier) {
-                    return item;
-                }
-           }*/
         
             return currentIterationItem;
-        }
-        
-        catch(SQLException sqle) {
+        } catch(SQLException sqle) {
             throw new DatabaseNotReachableException("Could not register the item.", sqle);
         }
     }
@@ -126,18 +89,46 @@ public class ItemInventory {
      * @return Returns true if item is in inventory.
      * @throws SQLException if the database call failed, or if the specific ID did not exist.
      */
-    public boolean findItem(int itemId) throws SQLException {
+    public boolean itemExists(int itemId) throws SQLException {
         boolean itemFound = false;
         
         ItemDTO registeredItem = findItemByID(itemId);
-         
-        //should use equals() instead
-        if(registeredItem.getItemIdentifier() == itemId) {
-            itemFound = true;
+
+        if(registeredItem != null) {
+            if(registeredItem.getItemIdentifier() == itemId) {
+                itemFound = true;
+            }
         }
-    
         return itemFound;
     }
+
+    public void updateInventory(SaleDTO totalDTO) {
+    }
+
+    /*@Override
+    public boolean equals(Object other) {
+        if (other == null || !(other instanceof ItemDTO)) {
+            return false;
+        }
+        ItemDTO otherItemDTO = (ItemDTO) other;
+        return this.itemName == otherItemDTO.getItemName() &&
+        this.price == otherItemDTO.getPrice() &&
+        this.vatRate == otherItemDTO.getVatRate() &&
+        this.itemDescription == otherItemDTO.getItemDescription() &&
+        this.itemIdentifier == otherItemDTO.getItemIdentifier();
+    }*/
+
+    /*@Override
+    public boolean equals(ItemDTO expected, ItemDTO actual, String message) {
+        if (actual == null || !(actual instanceof ItemDTO)) {
+            return false;
+        }
+        return this.itemName == actual.getItemName() &&
+                expected.getPrice() == actual.getPrice() &&
+                expected.getVatRate() == actual.getVatRate() &&
+                expected.getItemDescription() == actual.getItemDescription() &&
+                expected.getItemIdentifier() == actual.getItemIdentifier();
+    }*/
     
     /*private static class ItemData {
         private String itemName;

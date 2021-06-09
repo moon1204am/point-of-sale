@@ -11,15 +11,14 @@ import se.kth.iv1350.pointofsale.integration.Printer;
  */
 public class Sale {
     private LocalTime saleTime;
-    //private Receipt receipt;
-    
     private Amount runningTotal = new Amount(0.0);
     private List<Item> scannedItems = new ArrayList<>();
     Amount totalVatPrice = new Amount(0);
     private Amount totalPriceVatIncluded = new Amount(0.0);
-    private Amount totalVatRate;
+    //private Amount totalVatRate;
     private Amount itemVatPrice;
-    private PriceInfo priceInfo;
+    private int quantity;
+    private List<TotalRevenueObserver> revenueObservers = new ArrayList<>();
         
     /**
      * Creates a new instance and saves the time of the sale.
@@ -34,14 +33,14 @@ public class Sale {
      * @param quantity The quantity of one registered item.
      * @return Returns an object with item price, running total and item description.
      */
-    public TotalDTO currentRegisteredItemInfo(ItemDTO currentRegisteredItem, int quantity) {
+    public SaleDTO currentRegisteredItemInfo(ItemDTO currentRegisteredItem, int quantity) {
         Amount itemPrice = currentRegisteredItem.getPrice();
         String itemDesc = currentRegisteredItem.getItemDescription();
         
         runningTotal = updateRunningTotal(currentRegisteredItem, quantity);
         scannedItems = addItemToScannedItems(currentRegisteredItem, quantity);
        
-        TotalDTO total = new TotalDTO(itemPrice, runningTotal, itemDesc);
+        SaleDTO total = new SaleDTO(itemPrice, runningTotal, itemDesc, quantity, currentRegisteredItem.getItemIdentifier());
         return total;
     }
     
@@ -62,44 +61,58 @@ public class Sale {
      * Increases the quantity of an item by how much the cashier chooses.
      * @param addedQuantity how much quantity that should be added.
      */
-    private int increaseItemQuantity(int currentQuantity, int addedQuantity){
-        System.out.println("quantity was increased");
+    private int increaseItemQuantity(int currentQuantity, int addedQuantity) {
         return currentQuantity + addedQuantity;
     }
     
-    private List<Item> addItemToScannedItems(ItemDTO item, int quantity){
+    private List<Item> addItemToScannedItems(ItemDTO item, int quantity) {
         Item currentIterationItem;
         int itemId = item.getItemIdentifier();
-        boolean itemAlreadyRegistered = false;
         int updatedQuantity;
 
-        if(!scannedItems.isEmpty()){
-            for(int i = 0; i < scannedItems.size(); i++){
+        if(!scannedItems.isEmpty()) {
+            if(itemAlreadyScanned(itemId)) {
+                int i = getItemIndex(itemId);
                 currentIterationItem = scannedItems.get(i);
-                if(currentIterationItem.getItemIdentifier() == itemId) {
-                    itemAlreadyRegistered = true;
-
-                    updatedQuantity = increaseItemQuantity(currentIterationItem.getQuantity(), quantity);
-                    scannedItems.set(i, new Item(item, updatedQuantity));
-                    System.out.println("Quantity of item was increased");
-                } 
-            }
-            if(!itemAlreadyRegistered)
+                updatedQuantity = increaseItemQuantity(currentIterationItem.getQuantity(), quantity);
+                scannedItems.set(i, new Item(item, updatedQuantity));
+            } else {
                 addItem(new Item(item), quantity);
-        } 
-
-        if(scannedItems.isEmpty())
-            addItem(new Item (item), quantity);
-
+            }
+        }
+        else if(scannedItems.isEmpty()) {
+            addItem(new Item(item), quantity);
+        }
         return scannedItems;
     }
-    
+
+    private boolean itemAlreadyScanned(int itemId) {
+        boolean itemAlreadyRegistered = false;
+
+        if(getItemIndex(itemId) > -1) {
+            itemAlreadyRegistered = true;
+            return itemAlreadyRegistered;
+        }
+        return itemAlreadyRegistered;
+    }
+
+    private int getItemIndex(int itemId) {
+        Item currentIterationItem;
+
+        for(int i = 0; i < scannedItems.size(); i++){
+            currentIterationItem = scannedItems.get(i);
+            if(currentIterationItem.getItemIdentifier() == itemId) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
     /**
      * Adds one item to the scanned item list.
      * @param item The item being added.
      */
     private void addItem(Item item, int quantity) {
-        System.out.println("item was added");
         item.setQuantity(quantity);
         scannedItems.add(item);
     }
@@ -113,45 +126,55 @@ public class Sale {
     private Amount updateRunningTotal(ItemDTO item, int quantity) {
         Amount itemPrice = item.getPrice();
         Amount itemVatRate = item.getVatRate();
-        
+
         itemVatPrice = itemVatRate.multiply(itemPrice);
-        Amount itemPriceVatIncluded = itemVatPrice.plus(itemPrice);
+        Amount vatPriceOnly = itemVatPrice.minus(itemPrice);
         
         for(int i = 0; i < quantity; i++) {
-            runningTotal = runningTotal.plus(itemPriceVatIncluded);
-            totalVatPrice = totalVatPrice.plus(itemVatPrice);
+            runningTotal = runningTotal.plus(itemVatPrice);
+            totalVatPrice = vatPriceOnly.plus(totalVatPrice);
         }
+
         totalPriceVatIncluded = runningTotal;
-        
         return runningTotal;
     }
     
-    /*public Amount calculateTotalVatPrice(Amount itemPrice, Amount itemVatRate) {
-        
-        
-        totalVatPrice = totalPriceVatIncluded.minus(totalPriceVatExcluded);
-        totalVatPrice = totalVatPrice.divide(totalPriceVatIncluded);
-        
-        return totalVatPrice;
-    }*/
-    
-    public void printReceipt(Amount totalCost, Amount amountPaid, Amount change) {
+    public void printReceipt(Amount amountPaid, Amount change) {
         Receipt receipt = new Receipt(totalPriceVatIncluded, amountPaid, change, scannedItems, totalVatPrice);
-        //priceInfo = new PriceInfo(totalCost, totalVatRate, amountPaid, change); 
-        //Receipt receipt = new Receipt(priceInfo, scannedItems, totalVatPrice);
         Printer printer = new Printer();
         printer.printReceipt(receipt);
     }
+
+    public void addObserver(TotalRevenueObserver observer) {
+        revenueObservers.add(observer);
+    }
+
+    public void addObserver(List<TotalRevenueObserver> observers) {
+        revenueObservers.addAll(observers);
+    }
+
+    public void notifyObservers() {
+        for (TotalRevenueObserver observer: revenueObservers) {
+            observer.newPayment(runningTotal);
+            //observer.newPayment(totalPriceVatIncluded);
+        }
+    }
     
     public Amount getTotalPriceVatIncluded() {
+        notifyObservers();
         return totalPriceVatIncluded;
     }
     
     public Amount getTotalVatRate() {
-        return totalVatRate;
+        //return totalVatRate;
+        return totalVatPrice;
     }
     
     List<Item> getscannedItems() {
         return scannedItems;
+    }
+
+    public int getQuantity() {
+        return quantity;
     }
 }

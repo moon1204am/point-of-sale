@@ -14,6 +14,11 @@ import se.kth.iv1350.pointofsale.model.CashPayment;
  */
 public class CashRegister {
     private Amount balance = new Amount();
+    private Amount money;
+
+    public CashRegister(Amount money) {
+        this.money = money;
+    }
     
     public void addPayment(CashPayment payment) {
         balance = balance.plus(payment.getTotalPrice());

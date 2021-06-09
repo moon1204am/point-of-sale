@@ -5,7 +5,7 @@
  */
 package se.kth.iv1350.pointofsale.integration;
 
-import se.kth.iv1350.pointofsale.model.Sale;
+import se.kth.iv1350.pointofsale.model.SaleDTO;
 
 public class AccountingSystem {
     
@@ -15,8 +15,11 @@ public class AccountingSystem {
     public AccountingSystem() {
         
     }
-    
-    public void updateAccountingSystem(Sale paidSale) {
-        
+
+    /**
+     * Dummy method.
+     * @param paidSale the sale paid.
+     */
+    public void updateAccountingSystem(SaleDTO paidSale) {
     }
 }

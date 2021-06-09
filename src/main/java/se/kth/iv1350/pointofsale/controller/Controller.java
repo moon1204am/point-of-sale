@@ -1,39 +1,34 @@
 package se.kth.iv1350.pointofsale.controller;
 
+import se.kth.iv1350.pointofsale.integration.*;
+import se.kth.iv1350.pointofsale.model.*;
+
 import java.sql.SQLException;
-import se.kth.iv1350.pointofsale.integration.ExternalSystemCreator;
-import se.kth.iv1350.pointofsale.integration.ItemDTO;
-import se.kth.iv1350.pointofsale.integration.ItemInventory;
-import se.kth.iv1350.pointofsale.integration.UnknownItemIdentifierException;
-import se.kth.iv1350.pointofsale.model.Amount;
-import se.kth.iv1350.pointofsale.model.CashPayment;
-import se.kth.iv1350.pointofsale.model.PriceInfo;
-import se.kth.iv1350.pointofsale.model.Sale;
-import se.kth.iv1350.pointofsale.model.TotalDTO;
-import se.kth.iv1350.pointofsale.model.TotalRevenueObserver;
-import se.kth.iv1350.pointofsale.view.TotalRevenueView;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * This is the application's only controller. All calls to the model pass through this class. 
  */
 public class Controller {
     private Sale sale;
-    public ItemInventory inventory;
-    private ExternalSystemCreator systemCreator;
+    private ItemInventory inventory;
+    private AccountingSystem accounting;
     private Amount change;
     private Amount totalCost;
     private Amount totalVatRate;
     private CashPayment payment;
-    private PriceInfo price;
-    private TotalRevenueObserver obs = new TotalRevenueView();
-    
+    private CashRegister cashRegister;
+    private List<TotalRevenueObserver> revenueObservers = new ArrayList<>();
+
     public Controller() {
         
     }
     
     public Controller(ExternalSystemCreator systemCreator) {
-        this.systemCreator = systemCreator;
-        this.inventory = this.systemCreator.getItemInventory();
+        this.accounting = systemCreator.getAccountingSystem();
+        this.inventory = systemCreator.getItemInventory();
+        this.cashRegister = new CashRegister(new Amount(1000));
     }
     
     /**
@@ -41,38 +36,41 @@ public class Controller {
      */
     public void startSale() {
         sale = new Sale();
+        sale.addObserver(revenueObservers);
+    }
+
+    public SaleDTO registerItem(int itemIdentifier) throws SQLException, UnknownItemIdentifierException {
+        return registerItem(itemIdentifier, 1);
     }
     
     /**
      * Registers every item the costumer will purchase.
      * @param itemIdentifier is every item's ID.
      * @param quantity represents how many of each item is purchased.
-     * @return total will return the whole cost and information about the sale.
+     * @return An <code>TotalDTO</code> total will return the whole cost and information about the sale.
      * @throws UnknownItemIdentifierException if the ID does not exist in the inventory.
      */
-    public TotalDTO registerItem(int itemIdentifier, int quantity) throws UnknownItemIdentifierException, SQLException {
-        
-        if(quantity == 0) {
-            quantity = 1;
-        }
-        
-        boolean itemFound = inventory.findItem(itemIdentifier);
-        //System.out.println("item was found " + itemFound);
+    public SaleDTO registerItem(int itemIdentifier, int quantity) throws UnknownItemIdentifierException, SQLException {
+        boolean itemFound = inventory.itemExists(itemIdentifier);
         if(!itemFound) {
             throw new UnknownItemIdentifierException(itemIdentifier);
         }
         
         ItemDTO registeredItem = inventory.fetchItemFromInventory(itemIdentifier);
         
-        TotalDTO total = sale.currentRegisteredItemInfo(registeredItem, quantity);
+        SaleDTO total = sale.currentRegisteredItemInfo(registeredItem, quantity);
         return total;
     }
     
-    public Amount pay(Amount amountPaid) {
+    public void pay(Amount amountPaid) throws Exception {
         payment.setAmountPaid(amountPaid);
         change = payment.getChange();
-        obs.newPayment(payment);
-        return change;
+        cashRegister = new CashRegister(amountPaid);
+        if(change.getDouble() == -1) {
+            Amount left = payment.leftToPay();;
+            throw new Exception(String.valueOf(left));
+        }
+        cashRegister.addPayment(payment);
     }
     
     public Amount endSale() {
@@ -85,6 +83,15 @@ public class Controller {
     }
     
     public void printReceipt() {
-        sale.printReceipt(totalCost, payment.getAmountPaid(), change);
+        sale.printReceipt(payment.getAmountPaid(), change);
+    }
+
+    public void sendSaleInformation(SaleDTO totalDTO) {
+        inventory.updateInventory(totalDTO);
+        accounting.updateAccountingSystem(totalDTO);
+    }
+
+    public void addObserver(TotalRevenueObserver observer) {
+        revenueObservers.add(observer);
     }
 }

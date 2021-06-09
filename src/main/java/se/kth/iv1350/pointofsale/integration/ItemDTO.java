@@ -19,14 +19,14 @@ public class ItemDTO {
      * @param price how much the item costs.
      * @param vatRate how much VAT rate for each item.
      * @param itemDescription contains information about an item.
-     * @param itemIdentification the item ID.
+     * @param itemIdentifier the item ID.
      */
     public ItemDTO(String itemName, Amount price, Amount vatRate, String itemDescription, int itemIdentifier) {
+        this.itemName = itemName;
         this.price = price;
         this.vatRate = vatRate;
         this.itemDescription = itemDescription;
         this.itemIdentifier = itemIdentifier;
-        this.itemName = itemName;
     }
     
     public Amount getPrice() {

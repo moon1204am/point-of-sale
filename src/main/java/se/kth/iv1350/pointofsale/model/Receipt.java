@@ -1,5 +1,6 @@
 package se.kth.iv1350.pointofsale.model;
 
+import java.math.RoundingMode;
 import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
@@ -10,26 +11,25 @@ import java.util.List;
  * Represents one receipt, which proves the payment for one sale.
  */
 public class Receipt {
-    private Sale saleInfo;
     private Amount totalCostInclVat;
     private Amount totalCostExclVat;
     private Amount amountPaid;
     private Amount change;
-    //private PriceInfo priceInfo;
     private List<Item> boughtItems;
     private StoreInfo store = new StoreInfo();
     private Amount totalVatPrice;
+    private Sale sale;
     StringBuilder sb = new StringBuilder();
     
    /**
     * Creates an instance of an receipt.
-    * @param totalCost Total price of the entire sale.
+    * @param totalCostInclVat Total price of the entire sale.
     * @param amountPaid How much the customer paid.
     * @param change How much change the customer should receive.
     * @param boughtItems The list of all items that was purchased.
-    * @param totalVatRate The total VAT rate.
+    * @param totalVatPrice The total VAT price.
     */
-    Receipt(Amount totalCostInclVat, Amount amountPaid, Amount change, List<Item> boughtItems, Amount totalVatPrice){
+   Receipt(Amount totalCostInclVat, Amount amountPaid, Amount change, List<Item> boughtItems, Amount totalVatPrice){
         this.totalCostInclVat = totalCostInclVat;
         this.amountPaid = amountPaid;
         this.change = change;
@@ -38,13 +38,6 @@ public class Receipt {
         this.totalCostExclVat = totalCostInclVat.minus(totalVatPrice);
     }
     
-    /*Receipt(PriceInfo priceInfo, List<Item> boughtItems, Amount totalVatPrice) {
-        this.priceInfo = priceInfo;
-        this.boughtItems = boughtItems;
-        this.totalVatPrice = totalVatPrice;
-        this.totalCostExclVat = totalCostInclVat.minus(totalVatPrice);
-    }*/
-    
     /**
      * Creates one receipt.
      * @return The receipt that was just created.
@@ -52,7 +45,7 @@ public class Receipt {
     public StringBuilder buildReceipt() {
         DateFormat df = new SimpleDateFormat("dd/MM/yy HH:mm:ss");
         Date currentDateAndTime = new Date();
-        
+
         sb.append("RECEIPT\n");
         sb.append(store.getStoreName()).append("\n\n");
         appendBoughtItems();
@@ -65,31 +58,14 @@ public class Receipt {
     }
     
     private void appendBoughtItems(){
-        for(int i = 0; i < boughtItems.size(); i++) {
-            sb.append(boughtItems.get(i).getItemName()).append(" ");
-            sb.append(boughtItems.get(i).getQuantity()).append(" x ");
-            sb.append(boughtItems.get(i).getItemPriceVatIncluded()).append("\n");
+        for(Item item: boughtItems) {
+            sb.append(item.getItemName()).append(" ");
+            sb.append(item.getQuantity()).append(" x ");
+            sb.append(item.getItemPriceVatIncluded()).append("\n");
         }
     }
     
     private void appendTotal() {
-        /*DecimalFormat df2 = new DecimalFormat("#.##");
-        
-        sb.append("\nTotal price (excl. VAT): ");
-        sb.append(df2.format(priceInfo.getTotalVatPrice().minus(priceInfo.getTotalVatPrice()))).append("\n");
-        
-        sb.append("Total VAT: ");
-        sb.append(df2.format(priceInfo.getTotalVatPrice())).append("\n");
-        
-        sb.append("Total price (incl. VAT): ");
-        sb.append(df2.format(priceInfo.getTotalPriceVatIncluded())).append("\n");
-        
-        sb.append("\nAmount paid: ");
-        sb.append(df2.format(priceInfo.getAmountPaid()));
-        
-        sb.append("\nChange: ");
-        sb.append(df2.format(priceInfo.getChange())).append("\n\n");*/
-        
         sb.append("\nTotal price (excl. VAT): ");
         sb.append(totalCostExclVat).append("\n");
         

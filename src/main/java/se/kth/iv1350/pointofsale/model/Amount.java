@@ -5,6 +5,7 @@
  */
 package se.kth.iv1350.pointofsale.model;
 
+
 import java.text.DecimalFormat;
 
 public class Amount {
@@ -62,11 +63,11 @@ public class Amount {
     public Amount divide(Amount other) {
         return new Amount(amount/other.amount);
     }
-    
+
     public double getDouble() {
         return this.amount;
     }
-            
+
     /*@Override
     public String toString () {
         String s = "";
@@ -76,11 +77,25 @@ public class Amount {
     }*/
     
     @Override
-    public String toString () {
+    public String toString() {
         DecimalFormat df2 = new DecimalFormat("#.##");
-    String s = "";
-        s += df2.format(amount);
+        //String s = "";
+        String s = df2.format(amount);
 
-    return s;
+        return s;
     }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other == null || !(other instanceof Amount)) {
+            return false;
+        }
+        Amount otherAmount = (Amount) other;
+        return amount == otherAmount.amount;
+    }
+
+    /*@Override
+    public String toString() {
+        return Double.toString(amount);
+    }*/
 }
