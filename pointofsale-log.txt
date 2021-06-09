@@ -1,12 +1,15 @@
+9 juni 2021 21:18:25, Exception was thrown: Item ID 140 could not be found in the inventory.
 se.kth.iv1350.pointofsale.integration.UnknownItemIdentifierException: Item ID 140 could not be found in the inventory.
-	at se.kth.iv1350.pointofsale.controller.Controller.registerItem(Controller.java:62)
-	at se.kth.iv1350.pointofsale.view.View.runFakeExecution(View.java:73)
-	at se.kth.iv1350.pointofsale.startup.Main.main(Main.java:37)
+	at se.kth.iv1350.pointofsale.controller.Controller.registerItem(Controller.java:56)
+	at se.kth.iv1350.pointofsale.view.View.runFakeExecution(View.java:78)
+	at se.kth.iv1350.pointofsale.startup.Main.main(Main.java:31)
+9 juni 2021 21:18:25, Exception was thrown: Item ID 140 could not be found in the inventory.
 se.kth.iv1350.pointofsale.integration.UnknownItemIdentifierException: Item ID 140 could not be found in the inventory.
-	at se.kth.iv1350.pointofsale.controller.Controller.registerItem(Controller.java:62)
-	at se.kth.iv1350.pointofsale.view.View.runFakeExecution(View.java:73)
-	at se.kth.iv1350.pointofsale.startup.Main.main(Main.java:37)
+	at se.kth.iv1350.pointofsale.controller.Controller.registerItem(Controller.java:56)
+	at se.kth.iv1350.pointofsale.view.View.runFakeExecution(View.java:78)
+	at se.kth.iv1350.pointofsale.startup.Main.main(Main.java:31)
+9 juni 2021 21:18:25, Exception was thrown: Item ID 140 could not be found in the inventory.
 se.kth.iv1350.pointofsale.integration.UnknownItemIdentifierException: Item ID 140 could not be found in the inventory.
-	at se.kth.iv1350.pointofsale.controller.Controller.registerItem(Controller.java:62)
-	at se.kth.iv1350.pointofsale.view.View.runFakeExecution(View.java:73)
-	at se.kth.iv1350.pointofsale.startup.Main.main(Main.java:37)
+	at se.kth.iv1350.pointofsale.controller.Controller.registerItem(Controller.java:56)
+	at se.kth.iv1350.pointofsale.view.View.runFakeExecution(View.java:78)
+	at se.kth.iv1350.pointofsale.startup.Main.main(Main.java:31)

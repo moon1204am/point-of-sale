@@ -36,7 +36,7 @@ public class MainTest {
     }
     
     @Test
-    public void testUIHasStarted() throws UnknownItemIdentifierException, IOException, SQLException {
+    public void testUIHasStarted() throws Exception {
         String[] args = null;
         Main.main(args);
         String printout = printoutBuffer.toString();

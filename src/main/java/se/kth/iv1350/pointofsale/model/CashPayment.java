@@ -25,8 +25,7 @@ public class CashPayment {
     
     /**
      * Calculates the total cost of the specified sale.
-     * 
-     * @param paidSale The sale for which the customer is paying.
+     *
      */
     /*void calculateTotalPrice(Sale paidSale) {
         totalPrice = paidSale.getTotalPriceVatIncluded();
@@ -48,6 +47,18 @@ public class CashPayment {
      * @return The amount of change the customer shall have.
      */
     public Amount getChange() {
-        return amountPaid.minus(totalPrice);
+        if(amountPaid.getDouble() > totalPrice.getDouble()) {
+            return amountPaid.minus(totalPrice);
+        }
+        else if(amountPaid.getDouble() < totalPrice.getDouble()) {
+            return new Amount(-1);
+        }
+        else {
+            return new Amount(0);
+        }
+    }
+
+    public Amount leftToPay() {
+        return totalPrice.minus(amountPaid);
     }
 }

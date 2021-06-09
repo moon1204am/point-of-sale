@@ -22,13 +22,7 @@ public class Main {
      * The main method used to start the entire application.
      * @param args The application does not take any command line parameters.
      */
-    public static void main (String[] args) throws UnknownItemIdentifierException, IOException, SQLException {
-        /*ExternalSystemCreator systemCreator = new ExternalSystemCreator();
-        Controller contr = new Controller(systemCreator);
-        
-        View view = new View(contr);
-        view.runFakeExecution();*/
-        
+    public static void main (String[] args) throws Exception {
         ExternalSystemCreator systmCreator = new ExternalSystemCreator();
         Controller contrl = new Controller(systmCreator);
         
@@ -36,6 +30,7 @@ public class Main {
         for(int i = 0; i < 3; i++) {
             view.runFakeExecution();
         }
+        //view.runFakeExecution();
     }
     
 }

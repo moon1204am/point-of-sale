@@ -10,5 +10,5 @@ public interface TotalRevenueObserver {
      * Invoked when a payment has been paid.
      * @param totalAmountPaid The payment that has been paid.
      */
-    void newPayment(CashPayment totalAmountPaid);
+    void newPayment(Amount totalAmountPaid);
 }

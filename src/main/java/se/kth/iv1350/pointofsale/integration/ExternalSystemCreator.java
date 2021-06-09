@@ -13,8 +13,8 @@ public class ExternalSystemCreator {
      * Creates an instance of an accounting system and an item inventory.
      */
     public ExternalSystemCreator() {
-        accountingSys = new AccountingSystem();
-        itemInv = new ItemInventory();
+        this.accountingSys = new AccountingSystem();
+        this.itemInv = new ItemInventory();
     }
     
     public AccountingSystem getAccountingSystem() {

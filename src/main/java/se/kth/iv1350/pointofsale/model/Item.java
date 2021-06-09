@@ -49,9 +49,10 @@ public class Item {
         Amount itemVatRate = itemDTO.getVatRate();
         Amount itemPriceVatExcluded = itemDTO.getPrice();
         Amount itemVatPrice = itemPriceVatExcluded.multiply(itemVatRate);
-        Amount itemPriceVatIncluded = itemPriceVatExcluded.plus(itemVatPrice);
+        //Amount itemPriceVatIncluded = itemPriceVatExcluded.plus(itemVatPrice);
         
-        return itemPriceVatIncluded;
+        //return itemPriceVatIncluded;
+        return itemVatPrice;
     }
     
     public Amount getItemPriceVatIncluded() {

@@ -12,7 +12,6 @@ import se.kth.iv1350.pointofsale.model.CashPayment;
 import se.kth.iv1350.pointofsale.model.TotalRevenueObserver;
 
 public class TotalRevenueView implements TotalRevenueObserver {
-    private List<CashPayment> totalRevenue = new ArrayList<>();
     Amount total;
     
     /**
@@ -23,26 +22,23 @@ public class TotalRevenueView implements TotalRevenueObserver {
     }
 
     @Override
-    public void newPayment(CashPayment totalAmountPaid) {
+    public void newPayment(Amount totalAmountPaid) {
         addNewPayment(totalAmountPaid);
         printCurrentTotalRevenue();
     }
     
-    private void addNewPayment(CashPayment totalAmountPaid) {
-        totalRevenue.add(totalAmountPaid);
+    private void addNewPayment(Amount amount) {
+        total = total.plus(amount);
     }
     
     /**
      * Shows the total revenue since the program started.
      */
     private void printCurrentTotalRevenue() {
-        CashPayment sale = null;
-        total = new Amount(0);
-        
-        for(int i = 0; i < totalRevenue.size(); i++) {
-            sale = totalRevenue.get(i);
-            total = total.plus(sale.getAmountPaid());
-        }
+        System.out.println("\n");
+        System.out.println("--------------------------");
         System.out.println("Total revenue is " + total);
+        System.out.println("--------------------------");
+        System.out.println("\n");
     }
 }
